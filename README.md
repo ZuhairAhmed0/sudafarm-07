@@ -96,11 +96,14 @@ pnpm dlx shadcn@latest add button -c apps/web
 1. سجل الدخول إلى لوحة تحكم [Render Dashboard](https://dashboard.render.com).
 2. اضغط على **New +** ثم اختر **Blueprint**.
 3. اربط مستودع GitHub الخاص بالمشروع: `https://github.com/ZuhairAhmed0/sudafarm-07`.
-4. سيقوم Render تلقائياً بقراءة `render.yaml` وإنشاء:
-   - خدمة قاعدة بيانات **PostgreSQL** (`sudafarm-db`).
-   - خدمة الباك إند **Django Ninja API** (`sudafarm-api`) مع تشغيل المايجريشن تلقائياً وجمع الملفات الثابتة.
-   - خدمة الواجهة الأمامية **React SPA + Nginx** (`sudafarm-web`) وربطها بالـ API.
-5. اضغط **Apply** وانتظر اكتمال البناء.
+4. سيطلب منك Render إدخال قيمة `DATABASE_URL`:
+   - **إذا كان لديك قاعدة بيانات سابقة على Render**: انسخ الـ **Internal Database URL** الخاص بها والصقه هنا.
+   - **أو استخدم خدمة خارجية مجانية**: مثل [Neon.tech](https://neon.tech) أو [Supabase](https://supabase.com).
+   - **أو اتركه فارغاً**: وسيعمل المشروع تلقائياً بقاعدة بيانات **SQLite**.
+5. سيقوم Render تلقائياً ببناء الخدمتين:
+   - خدمة الباك إند **Django Ninja API** (`sudafarm-api`) مع تشغيل المايجريشن تلقائياً.
+   - خدمة الواجهة الأمامية **React SPA + Nginx** (`sudafarm-web`) وربطها بالباك إند تلقائياً.
+6. اضغط **Apply** وانتظر اكتمال البناء.
 
 ### 2. المتغيرات البيئية الهامة (Environment Variables)
 - `DJANGO_SECRET_KEY`: مفتاح سري لتشفير Django (يولده Render تلقائياً).

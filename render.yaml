@@ -8,7 +8,6 @@ services:
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: ./apps/api
     plan: free
-    region: frankfurt
     healthCheckPath: /api/health
     envVars:
       - key: DJANGO_DEBUG
@@ -18,9 +17,7 @@ services:
       - key: DJANGO_ALLOWED_HOSTS
         value: .onrender.com,localhost,127.0.0.1
       - key: DATABASE_URL
-        fromDatabase:
-          name: sudafarm-db
-          property: connectionString
+        sync: false
       - key: CORS_ALLOWED_ORIGINS
         value: https://sudafarm-web.onrender.com,http://localhost:3000,http://localhost:5173
       - key: CSRF_TRUSTED_ORIGINS
@@ -35,17 +32,9 @@ services:
     dockerfilePath: ./apps/web/Dockerfile
     dockerContext: .
     plan: free
-    region: frankfurt
     envVars:
       - key: BACKEND_URL
-        value: https://sudafarm-api.onrender.com
-
-# ---------------------------------------------------------
-# Managed Database (PostgreSQL)
-# ---------------------------------------------------------
-databases:
-  - name: sudafarm-db
-    plan: free
-    region: frankfurt
-    databaseName: sudafarm
-    user: sudafarm
+        fromService:
+          type: web
+          name: sudafarm-api
+          property: host
