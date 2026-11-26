@@ -3,6 +3,18 @@ set -e
 
 BACKEND_URL="${BACKEND_URL:-https://sudafarm-api.onrender.com}"
 
+# Handle bare service name from Render
+if [ "$BACKEND_URL" = "sudafarm-api" ]; then
+  BACKEND_URL="https://sudafarm-api.onrender.com"
+fi
+
+# If BACKEND_URL has no dot and no protocol, append onrender.com
+case "$BACKEND_URL" in
+  *.*) ;;
+  http://*|https://*) ;;
+  *) BACKEND_URL="https://${BACKEND_URL}.onrender.com" ;;
+esac
+
 # Ensure BACKEND_URL has a scheme
 case "$BACKEND_URL" in
   http://*|https://*) ;;

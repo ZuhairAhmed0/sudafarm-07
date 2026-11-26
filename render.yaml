@@ -34,7 +34,4 @@ services:
     plan: free
     envVars:
       - key: BACKEND_URL
-        fromService:
-          type: web
-          name: sudafarm-api
-          property: host
+        value: https://sudafarm-api.onrender.com
