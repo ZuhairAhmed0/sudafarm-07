@@ -1,6 +1,10 @@
+from datetime import timedelta
+
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 from accounts.models import User
+from listings.models import Listing
 from locations.models import Locality, State
 
 
@@ -98,8 +102,65 @@ class Command(BaseCommand):
                 username=account["username"],
                 defaults=account,
             )
-            if created or not user.check_password(password):
-                user.set_password(password)
-                user.save(update_fields=["password"])
+            user.set_password(password)
+            user.save()
 
-        self.stdout.write(self.style.SUCCESS("Seeded demo locations, farmers, and traders successfully."))
+        # Seed sample listings if none exist
+        if not Listing.objects.exists():
+            farmer1 = User.objects.get(username="farmer1")
+            farmer2 = User.objects.get(username="farmer2")
+            trader1 = User.objects.get(username="trader1")
+            trader2 = User.objects.get(username="trader2")
+            now = timezone.now()
+            expiry = now + timedelta(days=30)
+
+            demo_listings = [
+                {
+                    "author": farmer1,
+                    "listing_type": Listing.ListingType.SELL,
+                    "product_category": Listing.ProductCategory.SESAME,
+                    "product_name": "سمسم أبيض كركدي ممتاز",
+                    "price": 120000,
+                    "quantity": 50,
+                    "unit": Listing.Unit.SACK,
+                    "description": "محصول الموسم الحالي، نظيف ومخزن بعناية في ود مدني، جاهز للشحن الفوري.",
+                    "expires_at": expiry,
+                },
+                {
+                    "author": farmer2,
+                    "listing_type": Listing.ListingType.SELL,
+                    "product_category": Listing.ProductCategory.GROUNDNUT,
+                    "product_name": "فول سوداني مقشور حبة عريضة",
+                    "price": 95000,
+                    "quantity": 100,
+                    "unit": Listing.Unit.SACK,
+                    "description": "فول سوداني درجة أولى من حقول القضارف، جودة عالية للتصدير أو السوق المحلي.",
+                    "expires_at": expiry,
+                },
+                {
+                    "author": trader1,
+                    "listing_type": Listing.ListingType.SELL,
+                    "product_category": Listing.ProductCategory.SACKS,
+                    "product_name": "جوالات خيش جديدة للتعبئة",
+                    "price": 3500,
+                    "quantity": 2000,
+                    "unit": Listing.Unit.PIECE,
+                    "description": "جوالات خيش متينة ومناسبة لتعبئة الذرة والسمسم، التوصيل متاح لمختلف الولايات.",
+                    "expires_at": expiry,
+                },
+                {
+                    "author": trader2,
+                    "listing_type": Listing.ListingType.BUY,
+                    "product_category": Listing.ProductCategory.SORGHUM,
+                    "product_name": "مطلوب شراء ذرة طابت بكميات كبيرة",
+                    "price": 85000,
+                    "quantity": 300,
+                    "unit": Listing.Unit.SACK,
+                    "description": "نبحث عن موردين ومزارعين لشراء ذرة طابت درجة أولى، الدفع كاش عند الاستلام.",
+                    "expires_at": expiry,
+                },
+            ]
+            for item in demo_listings:
+                Listing.objects.create(**item)
+
+        self.stdout.write(self.style.SUCCESS("Seeded demo locations, farmers, traders, and listings successfully."))
